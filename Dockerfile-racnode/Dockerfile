@@ -136,7 +136,7 @@ RUN ssh-keygen -q -C '' -N '' -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
 
 
 # Create the ssh_known_hosts file 
-RUN for NODE in rac1 rac2; do (echo -n "$NODE " && cat /etc/ssh/ssh_host_ecdsa_key.pub) >> /etc/ssh/ssh_known_hosts; done
+RUN for NODE in apprehensiveobserver0 apprehensiveobserver1; do (echo -n "$NODE " && cat /etc/ssh/ssh_host_ecdsa_key.pub) >> /etc/ssh/ssh_known_hosts; done
 
 
 ###################################################################################

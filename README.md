@@ -180,6 +180,8 @@ cp networks-rac1.sh /srv/docker/scripts/
 
 Create the RAC node container. The `/srv/docker/rac_nodes/custom_services` directory holds configuration files shared among all of the RAC node containers. The `/oracledata/stage` directory holds the Oracle installation files. The `/sys/fs/cgroup` directory is necessary for systemd to run in the containers. The grid installation will fail without at least 1.5GB of shared memory.
 ```
+docker build --tag rac_initial ./Dockerfile-racnode
+
 docker run \
 --detach \
 --privileged \
@@ -295,11 +297,11 @@ docker run \
 --detach \
 --privileged \
 --name rac1 \
---hostname rac1 \
+--hostname apprehensiveobserver0 \
 --volume /srv/docker/rac_nodes/custom_services:/usr/lib/custom_services \
 --volume /oracledata/stage:/stage \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
---shm-size 10000m \
+--shm-size 4096m \
 --dns 10.10.10.10 \
 giinstalled \
 /usr/lib/systemd/systemd --system --unit=multi-user.target
