@@ -1,0 +1,1 @@
+KERNEL=="sdb", SYMLINK+="asmdisks/asm1", OWNER="54421", GROUP="54422"
