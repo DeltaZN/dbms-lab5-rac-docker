@@ -4,6 +4,32 @@
 
 ## Подготовка
 
+Я выпонял все действия на облачной виртуалке от google cloud(там есть три месяца бесплатно пользования).
+В принципе всё это можно делать и у себя на виртуалке, главное, чтоб памяти хватило и всё.
+
+К виртуалке необходимо подключить дополнительно три диска, которые будут использоваться для asm. (в разных виртуалках делается по-разному, поэтому здесь не рассматривается)
+
+Для виртуалки в качестве ОСи я взял Debian 10.
+
+Скачиваем оракл с гелиоса scp -r -P 2222 helios.cs.ifmo.ru:/export/install/oracle/database/12.1.0.2 .
+
+Устанавлиаем докер
+```
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
 Во всех скриптах в описании вместо apprehensiveobserver надо использовать имена бд и узлов, которые указаны по варианту.
 Для замены имён в скриптах 
 ```
@@ -29,7 +55,9 @@ Udev is used in the RAC node containers to give the ASM block devices correct pe
 
 Modify the `99-asm-disks.rules` file to reflect the devices on the host system that you have designated as ASM disks. For example, I have designated /dev/sdd, /dev/sde, and /dev/sdf as the three disks that will be used in my DATA ASM disk group.
 ```
-KERNEL=="sdb", SYMLINK+="asmdisks/asm1", OWNER="54421", GROUP="54422"
+KERNEL=="sdc", SYMLINK+="asmdisks/asm-clu-121-DATA-disk1", OWNER="54421", GROUP="54422"
+KERNEL=="sdd", SYMLINK+="asmdisks/asm-clu-121-DATA-disk2", OWNER="54421", GROUP="54422"
+KERNEL=="sde", SYMLINK+="asmdisks/asm-clu-121-DATA-disk3", OWNER="54421", GROUP="54422"
 ```
 
 NFS is used in the RAC node containers for the NDATA ASM disk group which uses file devices over NFS. The directory on the host OS that will be shared across the RAC node containers is `/oraclenfs`. Create three files on the host OS using `dd`.
@@ -192,7 +220,7 @@ docker run \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --shm-size 4096m \
 --dns 10.10.10.10 \
-sethmiller/giready \
+rac_initial \
 /usr/lib/systemd/systemd --system --unit=multi-user.target
 ```
 
@@ -343,7 +371,7 @@ docker exec rac1 su - grid -c ' \
 "oracle.install.asm.monitorPassword=oracle_4U" \
 "oracle.install.asm.diskGroup.name=DATA" \
 "oracle.install.asm.diskGroup.redundancy=EXTERNAL" \
-"oracle.install.asm.diskGroup.disks=/dev/asmdisks/asm1" \
+"oracle.install.asm.diskGroup.disks=/dev/asmdisks/asm-clu-121-DATA-disk1,/dev/asmdisks/asm-clu-121-DATA-disk2,/dev/asmdisks/asm-clu-121-DATA-disk3" \
 "oracle.install.asm.diskGroup.diskDiscoveryString=/dev/asmdisks/*,/oraclenfs/asm*" \
 "oracle.install.asm.useExistingDiskGroup=false"'
 ```
