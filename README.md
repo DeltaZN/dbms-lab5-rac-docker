@@ -11,7 +11,10 @@
 
 Для виртуалки в качестве ОСи я взял Debian 10.
 
-Скачиваем оракл с гелиоса scp -r -P 2222 helios.cs.ifmo.ru:/export/install/oracle/database/12.1.0.2 .
+Скачиваем оракл с гелиоса 
+```
+scp -r -P 2222 s265082@helios.cs.ifmo.ru:/export/install/oracle/database/12.1.0.2 .
+```
 
 Устанавлиаем докер
 ```
@@ -216,7 +219,7 @@ docker run \
 --name rac1 \
 --hostname apprehensiveobserver0 \
 --volume /srv/docker/rac_nodes/custom_services:/usr/lib/custom_services \
---volume /oracledata/stage:/stage \
+--volume /newdata:/stage \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --shm-size 4096m \
 --dns 10.10.10.10 \
@@ -259,7 +262,9 @@ $ docker exec rac1 ls -ld /dev/asmdisks/
 drwxr-xr-x. 2 root root 100 Oct 17 16:49 /dev/asmdisks/
 $ docker exec rac1 ls -l /dev/asmdisks/
 total 0
-lrwxrwxrwx 1 root root 6 May 30 13:24 asm1 -> ../sdb
+lrwxrwxrwx 1 root root 6 Jun  8 10:01 asm-clu-121-DATA-disk1 -> ../sdb
+lrwxrwxrwx 1 root root 6 Jun  8 10:01 asm-clu-121-DATA-disk2 -> ../sdc
+lrwxrwxrwx 1 root root 6 Jun  8 10:01 asm-clu-121-DATA-disk3 -> ../sdd
 ```
 
 Connect to the RAC node container and execute the grid infrastructure installer. This will install the grid software only.
@@ -327,7 +332,7 @@ docker run \
 --name rac1 \
 --hostname apprehensiveobserver0 \
 --volume /srv/docker/rac_nodes/custom_services:/usr/lib/custom_services \
---volume /oracledata/stage:/stage \
+--volume /newdata:/stage \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --shm-size 4096m \
 --dns 10.10.10.10 \
@@ -414,7 +419,7 @@ docker run \
 --name rac2 \
 --hostname apprehensiveobserver1 \
 --volume /srv/docker/rac_nodes/custom_services:/usr/lib/custom_services \
---volume /oracledata/stage:/stage \
+--volume /newdata:/stage \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --shm-size 4096m \
 --dns 10.10.10.10 \
