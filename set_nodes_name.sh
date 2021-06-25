@@ -4,7 +4,6 @@ for file in ./Dockerfile-racnode/Dockerfile \
  dhclient-rac1-eth-pub.service \
  dhclient-rac2-eth-priv.service \
  dhclient-rac2-eth-pub.service \
- networks-rac1.sh \
- networks-rac2.sh; do
+ README.md; do
     sed -i "s/$1/$2/g" $file
 done

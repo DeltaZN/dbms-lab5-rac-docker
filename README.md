@@ -58,9 +58,7 @@ Udev is used in the RAC node containers to give the ASM block devices correct pe
 
 Modify the `99-asm-disks.rules` file to reflect the devices on the host system that you have designated as ASM disks. For example, I have designated /dev/sdd, /dev/sde, and /dev/sdf as the three disks that will be used in my DATA ASM disk group.
 ```
-KERNEL=="sdc", SYMLINK+="asmdisks/asm-clu-121-DATA-disk1", OWNER="54421", GROUP="54422"
-KERNEL=="sdd", SYMLINK+="asmdisks/asm-clu-121-DATA-disk2", OWNER="54421", GROUP="54422"
-KERNEL=="sde", SYMLINK+="asmdisks/asm-clu-121-DATA-disk3", OWNER="54421", GROUP="54422"
+KERNEL=="sdb", SYMLINK+="asmdisks/asm1", OWNER="54421", GROUP="54422"
 ```
 
 NFS is used in the RAC node containers for the NDATA ASM disk group which uses file devices over NFS. The directory on the host OS that will be shared across the RAC node containers is `/oraclenfs`. Create three files on the host OS using `dd`.
@@ -263,8 +261,6 @@ drwxr-xr-x. 2 root root 100 Oct 17 16:49 /dev/asmdisks/
 $ docker exec rac1 ls -l /dev/asmdisks/
 total 0
 lrwxrwxrwx 1 root root 6 Jun  8 10:01 asm-clu-121-DATA-disk1 -> ../sdb
-lrwxrwxrwx 1 root root 6 Jun  8 10:01 asm-clu-121-DATA-disk2 -> ../sdc
-lrwxrwxrwx 1 root root 6 Jun  8 10:01 asm-clu-121-DATA-disk3 -> ../sdd
 ```
 
 Connect to the RAC node container and execute the grid infrastructure installer. This will install the grid software only.
@@ -376,7 +372,7 @@ docker exec rac1 su - grid -c ' \
 "oracle.install.asm.monitorPassword=oracle_4U" \
 "oracle.install.asm.diskGroup.name=DATA" \
 "oracle.install.asm.diskGroup.redundancy=EXTERNAL" \
-"oracle.install.asm.diskGroup.disks=/dev/asmdisks/asm-clu-121-DATA-disk1,/dev/asmdisks/asm-clu-121-DATA-disk2,/dev/asmdisks/asm-clu-121-DATA-disk3" \
+"oracle.install.asm.diskGroup.disks=/dev/asmdisks/asm1" \
 "oracle.install.asm.diskGroup.diskDiscoveryString=/dev/asmdisks/*,/oraclenfs/asm*" \
 "oracle.install.asm.useExistingDiskGroup=false"'
 ```
